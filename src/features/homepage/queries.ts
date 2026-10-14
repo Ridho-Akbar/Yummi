@@ -106,8 +106,8 @@ async function getTopSellingProducts(
   }
 
   const ids = (data ?? [])
-    .map((row) => row.product_id as string)
-    .filter((id) => !excludeIds.has(id))
+    .map((row: { product_id: string }) => row.product_id)
+    .filter((id: string) => !excludeIds.has(id))
     .slice(0, limit);
 
   return fetchProductsByIds(ids, category);

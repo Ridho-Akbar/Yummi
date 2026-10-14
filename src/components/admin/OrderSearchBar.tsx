@@ -52,8 +52,7 @@ export function OrderSearchBar({
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | undefined>(
     initialPaymentStatus
   );
-  const [dateFilter, setDateFilter] =
-    useState<DateFilter>(initialDateFilter);
+  const [dateFilter, setDateFilter] = useState<DateFilter>(initialDateFilter);
   const isFirstRender = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -147,7 +146,9 @@ export function OrderSearchBar({
           label="Waktu"
           filters={DATE_FILTERS}
           activeValue={dateFilter}
-          onSelect={setDateFilter}
+          onSelect={(value) => {
+            if (value) setDateFilter(value);
+          }}
           activeClass="bg-yumm-pink text-white"
         />
 

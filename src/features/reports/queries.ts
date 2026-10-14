@@ -37,7 +37,7 @@ export async function getReportData(
   if (customersResult.error) throw customersResult.error;
 
   const monthlyRevenue: MonthlyRevenue[] = (revenueResult.data ?? []).map(
-    (row) => ({
+    (row: { month_key: string; month_label: string; order_count: number; revenue: number }) => ({
       monthKey: row.month_key,
       monthLabel: row.month_label,
       orderCount: row.order_count,
@@ -45,15 +45,17 @@ export async function getReportData(
     })
   );
 
-  const topProducts: TopProduct[] = (productsResult.data ?? []).map((row) => ({
-    productId: row.product_id,
-    productName: row.product_name,
-    totalQty: row.total_qty,
-    totalRevenue: Number(row.total_revenue),
-  }));
+  const topProducts: TopProduct[] = (productsResult.data ?? []).map(
+    (row: { product_id: string | null; product_name: string; total_qty: number; total_revenue: number }) => ({
+      productId: row.product_id,
+      productName: row.product_name,
+      totalQty: row.total_qty,
+      totalRevenue: Number(row.total_revenue),
+    })
+  );
 
   const topCustomers: TopCustomer[] = (customersResult.data ?? []).map(
-    (row) => ({
+    (row: { customer_phone: string; customer_name: string; order_count: number; total_spent: number }) => ({
       customerPhone: row.customer_phone,
       customerName: row.customer_name,
       orderCount: row.order_count,

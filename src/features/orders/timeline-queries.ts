@@ -13,7 +13,18 @@ export async function getOrderTimeline(
 
   if (error) throw error;
 
-  return (data ?? []).map((row) => ({
+
+  interface TimelineRow {
+    id: string;
+    from_status: string;
+    to_status: string;
+    changed_by: string | null;
+    changed_by_name: string | null;
+    changed_by_email: string | null;
+    created_at: string;
+  }
+  
+  return (data ?? []).map((row: TimelineRow) => ({
     id: row.id,
     fromStatus: row.from_status as OrderStatus,
     toStatus: row.to_status as OrderStatus,

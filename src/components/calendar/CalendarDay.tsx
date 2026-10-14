@@ -4,9 +4,10 @@ import { cn } from "@/lib/utils";
 import {
   isSameMonth,
   isPast,
-  parseDateString,
-  type CalendarDayData,
+  parseDateString
 } from "@/lib/calendar";
+import type { CalendarDayData } from "@/features/calendar/queries";
+
 
 interface CalendarDayProps {
   date: Date;
@@ -53,7 +54,7 @@ export function CalendarDay({
 
       {orderCount > 0 && inMonth && (
         <span className="absolute bottom-1 flex gap-0.5">
-          {data!.orders.slice(0, 3).map((order) => (
+          {data!.orders.slice(0, 3).map((order: { id: string; status: string }) => (
             <span
               key={order.id}
               className={cn(

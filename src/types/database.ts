@@ -325,11 +325,11 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
-          is_available: boolean | null
+          is_available: boolean
           min_order_qty: number
           name: string
           price: number
-          ready_stock: number | null
+          ready_stock: number
         }
         Insert: {
           created_at?: string | null
@@ -337,11 +337,11 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
-          is_available?: boolean | null
+          is_available?: boolean
           min_order_qty?: number
           name: string
           price: number
-          ready_stock?: number | null
+          ready_stock?: number
         }
         Update: {
           created_at?: string | null
@@ -349,11 +349,11 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
-          is_available?: boolean | null
+          is_available?: boolean
           min_order_qty?: number
           name?: string
           price?: number
-          ready_stock?: number | null
+          ready_stock?: number
         }
         Relationships: []
       }

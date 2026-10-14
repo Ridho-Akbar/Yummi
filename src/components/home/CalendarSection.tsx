@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Calendar } from "lucide-react";
 import { ICON_SIZE } from "@/lib/icons";
-import { getMonthName, type CalendarDayData } from "@/lib/calendar";
+import { getMonthName } from "@/lib/calendar";
+import type { CalendarDayData } from "@/features/calendar/queries";
+
 import { CalendarGrid } from "@/components/calendar/CalendarGrid";
 
 interface CalendarSectionProps {

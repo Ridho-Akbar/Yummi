@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { CalendarDay } from "./CalendarDay";
 import { DayDetailModal } from "./DayDetailModal";
-import { getCalendarGrid, getDayNames, toDateString, type CalendarDayData } from "@/lib/calendar";
+import { getCalendarGrid, getDayNames, toDateString} from "@/lib/calendar";
+import type {CalendarDayData } from "@/features/calendar/queries"
 
 interface CalendarGridProps {
   year: number;

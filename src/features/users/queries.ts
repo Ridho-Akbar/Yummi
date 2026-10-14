@@ -13,6 +13,70 @@ export interface GetAllUsersParams {
   role?: UserRole;
 }
 
+// ============================================
+// RPC ROW TYPES
+// Supabase tidak meng-infer return type RPC secara otomatis,
+// jadi kita deklarasikan manual di sini.
+// ============================================
+
+interface UserProfileRow {
+  id: string;
+  email: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  phone: string | null;
+  role: string;
+  created_at: string;
+}
+
+interface RoleChangeLogRow {
+  id: string;
+  user_id: string;
+  user_display_name: string | null;
+  user_email: string | null;
+  changed_by: string | null;
+  changed_by_display_name: string | null;
+  changed_by_email: string | null;
+  old_role: string;
+  new_role: string;
+  created_at: string;
+}
+
+// ============================================
+// MAPPERS
+// ============================================
+
+function mapUserRow(row: UserProfileRow): UserListItem {
+  return {
+    id: row.id,
+    email: row.email,
+    displayName: row.display_name,
+    avatarUrl: row.avatar_url,
+    phone: row.phone,
+    role: row.role as UserRole,
+    createdAt: row.created_at,
+  };
+}
+
+function mapRoleChangeLogRow(row: RoleChangeLogRow): RoleChangeLog {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    userDisplayName: row.user_display_name,
+    userEmail: row.user_email,
+    changedBy: row.changed_by,
+    changedByDisplayName: row.changed_by_display_name,
+    changedByEmail: row.changed_by_email,
+    oldRole: row.old_role as UserRole,
+    newRole: row.new_role as UserRole,
+    createdAt: row.created_at,
+  };
+}
+
+// ============================================
+// QUERIES
+// ============================================
+
 export async function getAllUsers({
   query = "",
   role,
@@ -25,15 +89,7 @@ export async function getAllUsers({
 
   if (error) throw error;
 
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    email: row.email,
-    displayName: row.display_name,
-    avatarUrl: row.avatar_url,
-    phone: row.phone,
-    role: row.role as UserRole,
-    createdAt: row.created_at,
-  }));
+  return ((data ?? []) as UserProfileRow[]).map(mapUserRow);
 }
 
 export async function getRecentRoleChanges(
@@ -48,18 +104,7 @@ export async function getRecentRoleChanges(
 
   if (error) throw error;
 
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    userId: row.user_id,
-    userDisplayName: row.user_display_name,
-    userEmail: row.user_email,
-    changedBy: row.changed_by,
-    changedByDisplayName: row.changed_by_display_name,
-    changedByEmail: row.changed_by_email,
-    oldRole: row.old_role as UserRole,
-    newRole: row.new_role as UserRole,
-    createdAt: row.created_at,
-  }));
+  return ((data ?? []) as RoleChangeLogRow[]).map(mapRoleChangeLogRow);
 }
 
 export interface GetRoleChangeLogsParams {
@@ -87,21 +132,12 @@ export async function getRoleChangeLogs({
   if (listResult.error) throw listResult.error;
   if (countResult.error) throw countResult.error;
 
-  const logs = (listResult.data ?? []).map((row) => ({
-    id: row.id,
-    userId: row.user_id,
-    userDisplayName: row.user_display_name,
-    userEmail: row.user_email,
-    changedBy: row.changed_by,
-    changedByDisplayName: row.changed_by_display_name,
-    changedByEmail: row.changed_by_email,
-    oldRole: row.old_role as UserRole,
-    newRole: row.new_role as UserRole,
-    createdAt: row.created_at,
-  }));
+  const logs = ((listResult.data ?? []) as RoleChangeLogRow[]).map(
+    mapRoleChangeLogRow
+  );
 
   return {
     logs,
-    total: countResult.data ?? 0,
+    total: (countResult.data as number | null) ?? 0,
   };
 }

@@ -1,7 +1,8 @@
 export type NotificationType =
   | "new_order"
   | "admin_promoted"
-  | "admin_demoted";
+  | "admin_demoted"
+  | "system";
 
 export interface AdminNotificationItem {
   id: string;

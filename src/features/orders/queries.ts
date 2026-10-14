@@ -218,44 +218,47 @@ export async function searchAdminOrders({
 }: SearchAdminOrdersParams = {}): Promise<SearchAdminOrdersResult> {
   const supabase = await createClient();
 
-  function applyFilters<T extends ReturnType<typeof supabase.from>>(q: T): T {
-    let result = q.is("deleted_at", null);
+  const trimmed = query.trim();
+  const escaped = trimmed ? escapeLike(trimmed) : "";
+  const orClause = trimmed
+    ? `order_code.ilike.%${escaped}%,customer_name.ilike.%${escaped}%,customer_phone.ilike.%${escaped}%,customer_address.ilike.%${escaped}%`
+    : null;
+  const { start, end } = getDateRange(dateFilter);
 
-    const trimmed = query.trim();
-    if (trimmed) {
-      const escaped = escapeLike(trimmed);
-      result = result.or(
-        `order_code.ilike.%${escaped}%,customer_name.ilike.%${escaped}%,customer_phone.ilike.%${escaped}%,customer_address.ilike.%${escaped}%`
-      );
-    }
+  // List query
+  let listQuery = supabase
+    .from("orders")
+    .select(LIST_COLUMNS)
+    .is("deleted_at", null);
 
-    if (status) result = result.eq("status", status);
-    if (paymentStatus) result = result.eq("payment_status", paymentStatus);
+  if (orClause) listQuery = listQuery.or(orClause);
+  if (status) listQuery = listQuery.eq("status", status);
+  if (paymentStatus) listQuery = listQuery.eq("payment_status", paymentStatus);
+  if (start) listQuery = listQuery.gte("order_date", start);
+  if (end) listQuery = listQuery.lte("order_date", end);
 
-    const { start, end } = getDateRange(dateFilter);
-    if (start) result = result.gte("order_date", start);
-    if (end) result = result.lte("order_date", end);
+  // Count query (same filters, head-only)
+  let countQuery = supabase
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .is("deleted_at", null);
 
-    return result;
-  }
+  if (orClause) countQuery = countQuery.or(orClause);
+  if (status) countQuery = countQuery.eq("status", status);
+  if (paymentStatus) countQuery = countQuery.eq("payment_status", paymentStatus);
+  if (start) countQuery = countQuery.gte("order_date", start);
+  if (end) countQuery = countQuery.lte("order_date", end);
 
-  const listQuery = applyFilters(
-    supabase.from("orders").select(LIST_COLUMNS)
-  )
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
-
-  const countQuery = applyFilters(
-    supabase.from("orders").select("*", { count: "exact", head: true })
-  );
-
-  const [listResult, countResult] = await Promise.all([listQuery, countQuery]);
+  const [listResult, countResult] = await Promise.all([
+    listQuery.order("created_at", { ascending: false }).range(offset, offset + limit - 1),
+    countQuery,
+  ]);
 
   if (listResult.error) throw listResult.error;
   if (countResult.error) throw countResult.error;
 
   return {
-    orders: (listResult.data ?? []).map(mapRow),
+    orders: (listResult.data ?? []).map((row: RawOrderRow) => mapRow(row)),
     total: countResult.count ?? 0,
   };
 }

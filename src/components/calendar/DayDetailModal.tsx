@@ -2,7 +2,9 @@
 
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { parseDateString, type CalendarDayData } from "@/lib/calendar";
+import { parseDateString } from "@/lib/calendar";
+import type { CalendarDayData } from "@/features/calendar/queries";
+
 import { X } from "lucide-react";
 import { ICON_SIZE } from "@/lib/icons";
 
@@ -94,7 +96,7 @@ export function DayDetailModal({ date, data, onClose }: DayDetailModalProps) {
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
               {orderCount} pesanan
             </p>
-            {data!.orders.map((order) => (
+            {data!.orders.map((order: { id: string; status: string; customerName: string }) => (
               <div
                 key={order.id}
                 className="flex items-center justify-between gap-3 rounded-yumm border border-neutral-100 px-4 py-3"

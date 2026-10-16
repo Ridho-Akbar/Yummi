@@ -20,7 +20,6 @@ export async function saveFaqList(
     return { error: "Akses ditolak." };
   }
 
-  // Parse items from formData
   const items: {
     id: string | null;
     question: string;
@@ -51,7 +50,6 @@ export async function saveFaqList(
 
   const supabase = await createClient();
 
-  // Get current FAQ ids
   const { data: existing, error: fetchError } = await supabase
     .from("faqs")
     .select("id");
@@ -67,7 +65,6 @@ export async function saveFaqList(
       .map((i) => i.id)
   );
 
-  // Delete items that were removed
   const toDelete = Array.from(existingIds).filter(
     (id) => !incomingIds.has(id)
   );
@@ -76,22 +73,52 @@ export async function saveFaqList(
     if (error) return { error: "Gagal menghapus FAQ." };
   }
 
-  // Upsert items with new sort_order
-  const upsertRows = parsed.data.items.map((item, index) => ({
-    id: item.id ?? undefined,
-    question: item.question,
-    answer: item.answer,
-    sort_order: index,
-    is_active: item.isActive,
-  }));
+  // Pisahkan item baru dan item yang sudah ada.
+  // Upsert dengan id undefined bikin Supabase kirim string kosong,
+  // yang kemudian ditolak oleh constraint not null di kolom id.
+  const newItems = parsed.data.items
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => item.id === null)
+    .map(({ item, index }) => ({
+      question: item.question,
+      answer: item.answer,
+      sort_order: index,
+      is_active: item.isActive,
+    }));
 
-  const { error: upsertError } = await supabase
-    .from("faqs")
-    .upsert(upsertRows, { onConflict: "id" });
+  const existingItems = parsed.data.items
+    .map((item, index) => ({ item, index }))
+    .filter(
+      ({ item }): item is typeof item & { id: string } => item.id !== null
+    )
+    .map(({ item, index }) => ({
+      id: item.id,
+      question: item.question,
+      answer: item.answer,
+      sort_order: index,
+      is_active: item.isActive,
+    }));
 
-  if (upsertError) {
-    console.error("[saveFaqList] upsert error:", upsertError);
-    return { error: "Gagal menyimpan FAQ. Coba lagi." };
+  if (newItems.length > 0) {
+    const { error: insertError } = await supabase
+      .from("faqs")
+      .insert(newItems);
+
+    if (insertError) {
+      console.error("[saveFaqList] insert error:", insertError);
+      return { error: "Gagal menambah FAQ. Coba lagi." };
+    }
+  }
+
+  if (existingItems.length > 0) {
+    const { error: updateError } = await supabase
+      .from("faqs")
+      .upsert(existingItems, { onConflict: "id" });
+
+    if (updateError) {
+      console.error("[saveFaqList] update error:", updateError);
+      return { error: "Gagal memperbarui FAQ. Coba lagi." };
+    }
   }
 
   revalidatePath("/");

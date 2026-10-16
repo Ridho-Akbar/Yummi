@@ -77,21 +77,50 @@ export async function saveSocialLinks(
   }
 
   if (parsed.data.items.length > 0) {
-    const upsertRows = parsed.data.items.map((item, index) => ({
-      id: item.id ?? undefined,
-      platform: item.platform,
-      url: item.url,
-      sort_order: index,
-      is_active: item.isActive,
-    }));
+    // Pisahkan item baru dan item yang sudah ada.
+    // Upsert dengan id undefined bikin Supabase kirim string kosong,
+    // yang kemudian ditolak oleh constraint not null di kolom id.
+    const newItems = parsed.data.items
+      .map((item, index) => ({ item, index }))
+      .filter(({ item }) => item.id === null)
+      .map(({ item, index }) => ({
+        platform: item.platform,
+        url: item.url,
+        sort_order: index,
+        is_active: item.isActive,
+      }));
 
-    const { error: upsertError } = await supabase
-      .from("social_links")
-      .upsert(upsertRows, { onConflict: "id" });
+    const existingItems = parsed.data.items
+      .map((item, index) => ({ item, index }))
+      .filter(({ item }): item is typeof item & { id: string } => item.id !== null)
+      .map(({ item, index }) => ({
+        id: item.id,
+        platform: item.platform,
+        url: item.url,
+        sort_order: index,
+        is_active: item.isActive,
+      }));
 
-    if (upsertError) {
-      console.error("[saveSocialLinks] upsert error:", upsertError);
-      return { error: "Gagal menyimpan. Coba lagi." };
+    if (newItems.length > 0) {
+      const { error: insertError } = await supabase
+        .from("social_links")
+        .insert(newItems);
+
+      if (insertError) {
+        console.error("[saveSocialLinks] insert error:", insertError);
+        return { error: "Gagal menambah sosial media. Coba lagi." };
+      }
+    }
+
+    if (existingItems.length > 0) {
+      const { error: updateError } = await supabase
+        .from("social_links")
+        .upsert(existingItems, { onConflict: "id" });
+
+      if (updateError) {
+        console.error("[saveSocialLinks] update error:", updateError);
+        return { error: "Gagal memperbarui sosial media. Coba lagi." };
+      }
     }
   }
 

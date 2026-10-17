@@ -77,29 +77,39 @@ export async function saveSocialLinks(
   }
 
   if (parsed.data.items.length > 0) {
-    // Pisahkan item baru dan item yang sudah ada.
-    // Upsert dengan id undefined bikin Supabase kirim string kosong,
-    // yang kemudian ditolak oleh constraint not null di kolom id.
-    const newItems = parsed.data.items
-      .map((item, index) => ({ item, index }))
-      .filter(({ item }) => item.id === null)
-      .map(({ item, index }) => ({
-        platform: item.platform,
-        url: item.url,
-        sort_order: index,
-        is_active: item.isActive,
-      }));
-
-    const existingItems = parsed.data.items
-      .map((item, index) => ({ item, index }))
-      .filter(({ item }): item is typeof item & { id: string } => item.id !== null)
-      .map(({ item, index }) => ({
-        id: item.id,
-        platform: item.platform,
-        url: item.url,
-        sort_order: index,
-        is_active: item.isActive,
-      }));
+    const newItems: {
+      platform: string;
+      url: string;
+      sort_order: number;
+      is_active: boolean;
+    }[] = [];
+    
+    const existingItems: {
+      id: string;
+      platform: string;
+      url: string;
+      sort_order: number;
+      is_active: boolean;
+    }[] = [];
+    
+    parsed.data.items.forEach((item, index) => {
+      if (item.id === null) {
+        newItems.push({
+          platform: item.platform,
+          url: item.url,
+          sort_order: index,
+          is_active: item.isActive,
+        });
+      } else {
+        existingItems.push({
+          id: item.id,
+          platform: item.platform,
+          url: item.url,
+          sort_order: index,
+          is_active: item.isActive,
+        });
+      }
+    });
 
     if (newItems.length > 0) {
       const { error: insertError } = await supabase

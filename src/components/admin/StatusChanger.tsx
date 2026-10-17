@@ -1,8 +1,16 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import {
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Truck,
+  XCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ICON_SIZE } from "@/lib/icons";
 import {
   updateOrderStatus,
   type UpdateStatusState,
@@ -24,11 +32,33 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
   cancelled: "Dibatalkan",
 };
 
-const STATUS_STYLES: Record<OrderStatus, string> = {
-  pending: "border-yumm-coral bg-yumm-coral/10 text-yumm-coral",
-  confirmed: "border-yumm-lilac bg-yumm-lilac/10 text-yumm-lilac",
-  done: "border-emerald-500 bg-yumm-mint/20 text-emerald-700",
-  cancelled: "border-neutral-300 bg-neutral-100 text-ink-muted",
+const STATUS_ICONS: Record<OrderStatus, typeof Clock> = {
+  pending: Clock,
+  confirmed: CheckCircle2,
+  done: Truck,
+  cancelled: XCircle,
+};
+
+const STATUS_STYLES: Record<
+  OrderStatus,
+  { active: string; inactive: string }
+> = {
+  pending: {
+    active: "border-yumm-coral bg-yumm-coral/10 text-yumm-coral",
+    inactive: "border-neutral-200 bg-white text-ink-muted hover:border-yumm-coral hover:text-yumm-coral",
+  },
+  confirmed: {
+    active: "border-yumm-lilac bg-yumm-lilac/15 text-yumm-lilac",
+    inactive: "border-neutral-200 bg-white text-ink-muted hover:border-yumm-lilac hover:text-yumm-lilac",
+  },
+  done: {
+    active: "border-emerald-500 bg-yumm-mint/30 text-emerald-700",
+    inactive: "border-neutral-200 bg-white text-ink-muted hover:border-emerald-500 hover:text-emerald-700",
+  },
+  cancelled: {
+    active: "border-neutral-400 bg-neutral-200 text-ink",
+    inactive: "border-neutral-200 bg-white text-ink-muted hover:border-neutral-400 hover:text-ink",
+  },
 };
 
 const initialState: UpdateStatusState = {};
@@ -43,20 +73,19 @@ export function StatusChanger({
   );
 
   return (
-    <div className="space-y-3">
+    <form action={formAction} className="space-y-3">
+      <input type="hidden" name="orderId" value={orderId} />
+
       <p className="font-display text-xs font-semibold uppercase tracking-wide text-ink-muted">
         Ubah status
       </p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {orderStatuses.map((status) => (
           <StatusButton
             key={status}
-            orderId={orderId}
             status={status}
-            label={STATUS_LABELS[status]}
-            active={currentStatus === status}
-            formAction={formAction}
+            isActive={currentStatus === status}
           />
         ))}
       </div>
@@ -67,47 +96,57 @@ export function StatusChanger({
       {state.success && (
         <p className="text-xs text-emerald-600">{state.success}</p>
       )}
-    </div>
+    </form>
   );
 }
 
 interface StatusButtonProps {
-  orderId: string;
   status: OrderStatus;
-  label: string;
-  active: boolean;
-  formAction: (formData: FormData) => void;
+  isActive: boolean;
 }
 
-function StatusButton({
-  orderId,
-  status,
-  label,
-  active,
-  formAction,
-}: StatusButtonProps) {
-  const { pending } = useFormStatus();
+function StatusButton({ status, isActive }: StatusButtonProps) {
+  const { pending, data } = useFormStatus();
+
+  // Cek apakah tombol INI yang sedang diklik
+  const isThisButtonSubmitting =
+    pending && data?.get("status") === status;
+
+  // Disable semua tombol jika ada form yang sedang submit
+  const disabled = isActive || pending;
+
+  const Icon = STATUS_ICONS[status];
+  const styles = STATUS_STYLES[status];
 
   return (
-    <form action={formAction}>
-      <input type="hidden" name="orderId" value={orderId} />
-      <input type="hidden" name="status" value={status} />
-      <button
-        type="submit"
-        disabled={active || pending}
-        className={cn(
-          "rounded-full border-2 px-4 py-1.5",
-          "font-display text-xs font-semibold",
-          "transition-all duration-150",
-          active
-            ? STATUS_STYLES[status]
-            : "border-neutral-200 bg-white text-ink-muted hover:border-neutral-300 hover:text-ink",
-          active && "cursor-default",
-          pending && "opacity-50"
-        )}
-      >
-        {label}
-      </button>
-    </form>
+    <button
+      type="submit"
+      name="status"
+      value={status}
+      disabled={disabled}
+      className={cn(
+        "relative flex items-center justify-center gap-2 rounded-yumm border-2 px-3 py-2.5",
+        "font-display text-xs font-semibold transition-all duration-150",
+        isActive ? styles.active : styles.inactive,
+        disabled && !isThisButtonSubmitting && "opacity-50 cursor-not-allowed",
+        isThisButtonSubmitting && "opacity-100"
+      )}
+    >
+      {isThisButtonSubmitting ? (
+        <>
+          <Loader2
+            size={ICON_SIZE.sm}
+            className="animate-spin"
+            strokeWidth={2.5}
+          />
+          <span>Memproses...</span>
+        </>
+      ) : (
+        <>
+          <Icon size={ICON_SIZE.sm} strokeWidth={2.5} />
+          <span>{STATUS_LABELS[status]}</span>
+        </>
+      )}
+    </button>
   );
 }

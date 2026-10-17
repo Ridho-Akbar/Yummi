@@ -193,3 +193,33 @@ async function adjustReadyStockFromAbsolute(
 
   return { newStock: Math.max(0, value) };
 }
+
+export async function updateReadyStock(
+  productId: string,
+  newStock: number
+): Promise<AdjustStockResult> {
+  try {
+    await requireAdmin();
+  } catch {
+    return { error: "Akses ditolak." };
+  }
+
+  if (!Number.isInteger(newStock) || newStock < 0) {
+    return { error: "Stok tidak valid." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("products")
+    .update({ ready_stock: newStock })
+    .eq("id", productId);
+
+  if (error) {
+    return { error: "Gagal menyimpan. Coba lagi." };
+  }
+
+  revalidatePath("/admin/products");
+  revalidatePath("/admin");
+
+  return { newStock };
+}

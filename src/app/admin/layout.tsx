@@ -7,9 +7,10 @@ import {
   countReminders,
 } from "@/features/reminders/queries";
 import { getAdminNotifications } from "@/features/notifications/queries";
+import { getSiteSettings } from "@/features/site/queries";
 
 export const metadata = {
-  title: "Admin — Yumm!",
+  title: "Dashboard Admin",
 };
 
 export default async function AdminLayout({
@@ -27,15 +28,21 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  const [reminders, notificationsResult] = await Promise.all([
+  const [reminders, notificationsResult, settings] = await Promise.all([
     getAdminReminders(),
     getAdminNotifications(),
+    getSiteSettings(),
   ]);
+
   const reminderCount = countReminders(reminders);
 
   return (
     <div className="flex min-h-dvh bg-surface-muted">
-      <AdminSidebar user={user} reminderCount={reminderCount} />
+      <AdminSidebar
+        user={user}
+        reminderCount={reminderCount}
+        storeName={settings.storeInfo.name}
+      />
       <main className="flex-1 overflow-x-hidden">
         <div className="mx-auto max-w-6xl px-4 pb-4 pt-16 sm:px-6 sm:pb-6 sm:pt-16 lg:px-8 lg:pb-8 lg:pt-16">
           {children}

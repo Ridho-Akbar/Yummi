@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { ICON_SIZE } from "@/lib/icons";
 import type { HowToOrderItem } from "@/features/site/types";
 
 interface HowToOrderSectionProps {
@@ -11,51 +9,54 @@ export function HowToOrderSection({ items }: HowToOrderSectionProps) {
   if (items.length === 0) return null;
 
   return (
-    <section className="bg-surface-muted px-4 py-16 sm:px-6 sm:py-20">
+    <section className="bg-yumm-pink/10 px-4 py-20 sm:px-6 sm:py-28">
       <div className="mx-auto max-w-5xl">
-        <div className="mb-12 text-center">
-          <p className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-yumm-pink">
-            Cara Pesan
-          </p>
-          <h2 className="mt-2 font-display text-2xl font-bold text-ink sm:text-3xl">
-            Tiga langkah, langsung jadi
+        <div className="mb-14 text-center">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+            Cara Mudah <span className="text-yumm-pink">Pesan</span>
           </h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-ink-muted sm:text-base">
+            Hanya butuh beberapa langkah sederhana untuk memulai pesananmu.
+          </p>
         </div>
 
-        <div className="relative">
-          <div
-            aria-hidden
-            className="absolute left-1/2 top-8 hidden h-0.5 w-2/3 -translate-x-1/2 border-t-2 border-dashed border-yumm-pink/30 lg:block"
-          />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((item, index) => (
+            <div
+              key={index}
+              className="group relative overflow-hidden rounded-[2rem] bg-white p-7 shadow-sm ring-1 ring-yumm-pink/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:ring-yumm-pink/40"
+            >
+              {/* Angka Raksasa Transparan di Latar Belakang (Watermark) */}
+              <span
+                aria-hidden
+                className="absolute -right-2 -top-6 font-display text-8xl font-black tracking-tighter text-yumm-pink/5 transition-colors duration-300 group-hover:text-yumm-pink/10"
+              >
+                {String(index + 1).padStart(2, "0")}
+              </span>
 
-          <ol className="relative grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((item, index) => (
-              <li key={index} className="text-center">
-                <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-yumm-pink to-yumm-coral font-display text-xl font-bold text-white shadow-lg shadow-yumm-pink/25">
-                  {index + 1}
-                </div>
-                <h3 className="mt-5 font-display text-lg font-bold text-ink">
+              {/* Konten di Atas Watermark */}
+              <div className="relative">
+                <span className="font-display text-xs font-bold uppercase tracking-widest text-yumm-pink">
+                  Langkah {index + 1}
+                </span>
+                <h3 className="mt-2 font-display text-lg font-bold text-ink">
                   {item.title}
                 </h3>
-                <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-ink-muted">
+                <p className="mt-2 text-sm leading-relaxed text-ink-muted">
                   {item.desc}
                 </p>
-              </li>
-            ))}
-          </ol>
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-14 text-center">
+          {/* Tombol dikembalikan ke style standar (Pink) */}
           <Link
             href="/order"
-            className="group inline-flex items-center gap-2 rounded-full bg-yumm-pink px-7 py-3.5 font-display text-sm font-semibold text-white shadow-lg shadow-yumm-pink/25 transition-all hover:-translate-y-0.5 hover:bg-yumm-coral"
+            className="inline-flex items-center justify-center rounded-full bg-yumm-pink px-8 py-3.5 font-display text-sm font-semibold text-white shadow-lg shadow-yumm-pink/25 transition-all hover:-translate-y-0.5 hover:bg-yumm-coral"
           >
-            Mulai pesan
-            <ArrowRight
-              size={ICON_SIZE.sm}
-              strokeWidth={2.5}
-              className="transition-transform group-hover:translate-x-0.5"
-            />
+            Mulai pesan sekarang
           </Link>
         </div>
       </div>

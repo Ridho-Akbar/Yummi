@@ -25,6 +25,7 @@ import type { CurrentUser } from "@/lib/auth";
 interface AdminSidebarProps {
   user: CurrentUser;
   reminderCount: number;
+  storeName: string;
 }
 
 const NAV_ITEMS = [
@@ -36,7 +37,7 @@ const NAV_ITEMS = [
   { href: "/admin/users", label: "Pengguna", Icon: Users },
 ];
 
-export function AdminSidebar({ user, reminderCount }: AdminSidebarProps) {
+export function AdminSidebar({ user, reminderCount, storeName }: AdminSidebarProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -67,10 +68,11 @@ export function AdminSidebar({ user, reminderCount }: AdminSidebarProps) {
         <div className="border-b border-neutral-100 px-6 py-5">
           <Link
             href="/"
-            className="font-display text-2xl font-bold text-yumm-pink"
+            className="block max-w-[180px] truncate font-display text-2xl font-bold text-yumm-pink"
+            title={storeName}
             onClick={() => setOpen(false)}
           >
-            Yumm!
+            {storeName}
           </Link>
           <p className="mt-1 text-xs text-ink-muted">Dashboard Admin</p>
         </div>
@@ -133,26 +135,6 @@ export function AdminSidebar({ user, reminderCount }: AdminSidebarProps) {
 
           <div className="my-2 border-t border-neutral-100" />
 
-          <Link
-            href="/admin/homepage"
-            onClick={() => setOpen(false)}
-            className={cn(
-              "flex items-center gap-3 rounded-yumm px-4 py-2.5",
-              "font-display text-sm font-semibold transition-colors",
-              pathname.startsWith("/admin/homepage")
-                ? "bg-yumm-pink/10 text-yumm-pink"
-                : "text-ink-muted hover:bg-surface-muted hover:text-ink"
-            )}
-          >
-            <Star
-              size={ICON_SIZE.md}
-              strokeWidth={
-                pathname.startsWith("/admin/homepage") ? 2.5 : 2
-              }
-              className="shrink-0"
-            />
-            <span className="flex-1">Produk Unggulan</span>
-          </Link>
 
           <Link
             href="/admin/settings"
@@ -174,23 +156,8 @@ export function AdminSidebar({ user, reminderCount }: AdminSidebarProps) {
             />
             <span className="flex-1">Pengaturan</span>
           </Link>
-
-          <Link
-            href="/admin/faqs"
-            onClick={() => setOpen(false)}
-            className={cn(
-              "flex items-center gap-3 rounded-yumm px-4 py-2.5",
-              "font-display text-sm font-semibold transition-colors",
-              pathname.startsWith("/admin/faqs")
-                ? "bg-yumm-pink/10 text-yumm-pink"
-                : "text-ink-muted hover:bg-surface-muted hover:text-ink"
-            )}
-          >
-            <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center font-display text-sm font-bold leading-none">
-              ?
-            </span>
-            <span className="flex-1">FAQ</span>
-          </Link>
+          
+          {/* Menu FAQ DIHAPUS DARI SINI */}
         </nav>
 
         <div className="border-t border-neutral-100 p-4">

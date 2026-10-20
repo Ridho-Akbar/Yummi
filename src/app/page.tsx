@@ -1,12 +1,11 @@
-import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { getCalendarData } from "@/features/calendar/queries";
 import { getSiteSettings } from "@/features/site/queries";
 import { getActiveFaqs } from "@/features/faqs/queries";
 import { getActiveSocialLinks } from "@/features/social-links/queries";
 import { getHomepageData } from "@/features/homepage/queries";
-import { SignInButton } from "@/components/auth/SignInButton";
-import { UserMenu } from "@/components/auth/UserMenu";
+
+import { Navbar } from "@/components/home/Navbar";
 import { HeroSection } from "@/components/home/HeroSection";
 import { WhyChooseSection } from "@/components/home/WhyChooseSection";
 import { FeaturedProductsSection } from "@/components/home/FeaturedProductsSection";
@@ -48,48 +47,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <div className="min-h-dvh bg-surface">
-      <header className="sticky top-0 z-30 border-b border-neutral-100 bg-surface/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-          <Link
-            href="/"
-            className="font-display text-2xl font-bold text-yumm-pink sm:text-3xl"
-          >
-            Yumm!
-          </Link>
-
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link
-              href="/documentation/features"
-              className="hidden text-sm font-semibold text-ink-muted transition-colors hover:text-yumm-pink sm:inline-block"
-            >
-              Fitur
-            </Link>
-            <Link
-               href="/documentation/developer"
-               className="hidden text-sm font-semibold text-ink-muted transition-colors hover:text-yumm-pink sm:inline-block"
-             >
-               Setup
-             </Link>
-            <Link
-               href="/documentation/admin-guide"
-               className="hidden text-sm font-semibold text-ink-muted transition-colors hover:text-yumm-pink sm:inline-block"
-             >
-               Panduan Admin
-             </Link>
-            <Link
-              href="/order"
-              className="rounded-full bg-yumm-pink px-4 py-2 font-display text-xs font-semibold text-white transition-colors hover:bg-yumm-coral sm:text-sm"
-            >
-              Pesan
-            </Link>
-            {user ? (
-              <UserMenu user={user} />
-            ) : (
-              <SignInButton label="Masuk" />
-            )}
-          </div>
-        </div>
-      </header>
+      {/* OPER NAMA TOKO DARI DATABASE KE NAVBAR */}
+      <Navbar user={user} storeName={settings.storeInfo.name} />
 
       <main>
         <HeroSection hero={settings.hero} whatsappUrl={whatsappUrl} />

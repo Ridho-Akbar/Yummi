@@ -8,41 +8,37 @@ export function WhyChooseSection({ items }: WhyChooseSectionProps) {
   if (items.length === 0) return null;
 
   return (
-    <section className="px-4 py-16 sm:px-6 sm:py-20">
+    <section className="px-4 py-20 sm:px-6 sm:py-28">
       <div className="mx-auto max-w-5xl">
-        <div className="mb-12 text-center">
-          <p className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-yumm-pink">
-            Kenapa Pilih Yumm
-          </p>
-          <h2 className="mt-2 font-display text-2xl font-bold text-ink sm:text-3xl">
-            Alasan pelanggan balik lagi
+        <div className="mb-14 text-center">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+            Kenapa Pilih <span className="text-yumm-pink">Kami?</span>
           </h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-ink-muted sm:text-base">
+            Bukan sekadar jualan, ini alasan utama mengapa pelanggan mempercayakan acaranya kepada kami.
+          </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item, index) => (
             <div
               key={index}
-              className="relative overflow-hidden rounded-yumm-lg border border-neutral-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+              className="group relative flex flex-col items-start rounded-[2rem] bg-white p-7 shadow-sm ring-1 ring-neutral-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:ring-yumm-pink/30"
             >
-              <span
-                aria-hidden
-                className="absolute -right-3 -top-5 font-display text-7xl font-bold text-yumm-pink/10"
-              >
-                {String(index + 1).padStart(2, "0")}
-              </span>
-
-              <div className="relative">
-                <span className="font-display text-xs font-bold uppercase tracking-[0.2em] text-yumm-pink">
+              {/* Badge Angka */}
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yumm-pink/10 text-yumm-pink transition-all duration-300 group-hover:bg-yumm-pink group-hover:text-white">
+                <span className="font-display text-sm font-bold">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <h3 className="mt-3 font-display text-lg font-bold text-ink">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-                  {item.desc}
-                </p>
               </div>
+
+              {/* Judul & Deskripsi */}
+              <h3 className="mt-5 font-display text-lg font-bold text-ink">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+                {item.desc}
+              </p>
             </div>
           ))}
         </div>

@@ -25,14 +25,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const year = params.year ? Number(params.year) : now.getFullYear();
   const month = params.month ? Number(params.month) : now.getMonth();
 
-  const [
-    user,
-    settings,
-    faqs,
-    socialLinks,
-    homepageData,
-    calendarDays,
-  ] = await Promise.all([
+  const [user, settings, faqs, socialLinks, homepageData, calendarDays] = await Promise.all([
     getCurrentUser(),
     getSiteSettings(),
     getActiveFaqs(),
@@ -41,38 +34,33 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     getCalendarData(year, month),
   ]);
 
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+
   const whatsappUrl = settings.whatsapp.url || null;
-  const showFloating =
-    settings.whatsapp.floatingEnabled && Boolean(whatsappUrl);
+  const showFloating = settings.whatsapp.floatingEnabled && Boolean(whatsappUrl);
 
   return (
     <div className="min-h-dvh bg-surface">
-      {/* OPER NAMA TOKO DARI DATABASE KE NAVBAR */}
       <Navbar user={user} storeName={settings.storeInfo.name} />
 
       <main>
         <HeroSection hero={settings.hero} whatsappUrl={whatsappUrl} />
-
         <WhyChooseSection items={settings.whyChoose} />
-
         <FeaturedProductsSection data={homepageData} />
-
         <HowToOrderSection items={settings.howToOrder} />
-
-        <CalendarSection year={year} month={month} days={calendarDays} />
-
+        
+        <CalendarSection 
+          year={year} 
+          month={month} 
+          days={calendarDays} 
+          isAdmin={isAdmin}
+        />
+        
         <FaqSection faqs={faqs} />
       </main>
 
-      <SiteFooter
-        store={settings.storeInfo}
-        footer={settings.footer}
-        socialLinks={socialLinks}
-      />
-
-      {showFloating && whatsappUrl && (
-        <FloatingButton whatsappUrl={whatsappUrl} />
-      )}
+      <SiteFooter store={settings.storeInfo} footer={settings.footer} socialLinks={socialLinks} />
+      {showFloating && whatsappUrl && <FloatingButton whatsappUrl={whatsappUrl} />}
     </div>
   );
 }

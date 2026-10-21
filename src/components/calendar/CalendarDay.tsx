@@ -1,13 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-  isSameMonth,
-  isPast,
-  parseDateString
-} from "@/lib/calendar";
-import type { CalendarDayData } from "@/features/calendar/queries";
-
+import { isSameMonth, isPast, type CalendarDayData } from "@/lib/calendar";
 
 interface CalendarDayProps {
   date: Date;
@@ -17,19 +11,15 @@ interface CalendarDayProps {
   onClick: (data: CalendarDayData | null, date: Date) => void;
 }
 
-export function CalendarDay({
-  date,
-  currentYear,
-  currentMonth,
-  data,
-  onClick,
-}: CalendarDayProps) {
+export function CalendarDay({ date, currentYear, currentMonth, data, onClick }: CalendarDayProps) {
   const inMonth = isSameMonth(date, currentYear, currentMonth);
   const past = isPast(date);
   const orderCount = data?.orders.length ?? 0;
   const unavailable = data?.isAvailable === false;
 
   const hasContent = orderCount > 0 || unavailable;
+  
+  // Tanggal lampau TETAP BISA DIKLIK agar bisa lihat data masa lalu
   const clickable = inMonth && (hasContent || !past);
 
   return (
@@ -48,9 +38,7 @@ export function CalendarDay({
         !clickable && "cursor-default"
       )}
     >
-      <span className="font-display text-sm font-semibold">
-        {date.getDate()}
-      </span>
+      <span className="font-display text-sm font-semibold">{date.getDate()}</span>
 
       {orderCount > 0 && inMonth && (
         <span className="absolute bottom-1 flex gap-0.5">
@@ -70,9 +58,7 @@ export function CalendarDay({
       )}
 
       {unavailable && inMonth && orderCount === 0 && (
-        <span className="absolute bottom-1 text-[10px] font-bold text-ink-muted">
-          ×
-        </span>
+        <span className="absolute bottom-1 text-[10px] font-bold text-ink-muted">×</span>
       )}
     </button>
   );

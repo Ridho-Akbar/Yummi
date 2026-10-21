@@ -17,9 +17,25 @@ interface OrderPageProps {
 export default async function OrderPage({ searchParams }: OrderPageProps) {
   const params = await searchParams;
   const [user, settings] = await Promise.all([getCurrentUser(), getSiteSettings()]);
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
 
-  const isValidDate = params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date);
-  const initialDate = isValidDate ? params.date! : ""; 
+  let minDate = undefined;
+  let maxDate = undefined;
+  if (!isAdmin) {
+    const today = new Date();
+    const max = new Date();
+    max.setMonth(today.getMonth() + 2);
+    minDate = toDateString(today);
+    maxDate = toDateString(max);
+  }
+
+  // Sanitasi URL Parameter: Jika anonim memasukkan tanggal lampau via URL, kosongkan.
+  let initialDate = params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date) ? params.date : ""; 
+  if (!isAdmin && initialDate) {
+    if (initialDate < minDate! || initialDate > maxDate!) {
+      initialDate = "";
+    }
+  }
 
   let initialItems: { productId: string; qty: number }[] | undefined;
   if (params.items) {
@@ -57,6 +73,8 @@ export default async function OrderPage({ searchParams }: OrderPageProps) {
           initialItems={initialItems}
           isLoggedIn={!!user}
           initialCapacities={capacities}
+          minDate={minDate}
+          maxDate={maxDate}
         />
       </div>
     </main>

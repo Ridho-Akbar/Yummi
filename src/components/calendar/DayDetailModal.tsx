@@ -1,22 +1,21 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { parseDateString } from "@/lib/calendar";
+import { isPast } from "@/lib/calendar";
 import type { CalendarDayData } from "@/features/calendar/queries";
-
-import { X } from "lucide-react";
-import { ICON_SIZE } from "@/lib/icons";
 
 interface DayDetailModalProps {
   date: Date;
   data: CalendarDayData | null;
+  isAdmin?: boolean;
   onClose: () => void;
 }
 
 const STATUS_LABELS: Record<string, string> = {
-  pending: "Menunggu konfirmasi",
-  confirmed: "Sudah dikonfirmasi",
+  pending: "Pending",
+  confirmed: "Dikonfirmasi",
   done: "Selesai",
   cancelled: "Dibatalkan",
 };
@@ -24,11 +23,16 @@ const STATUS_LABELS: Record<string, string> = {
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-yumm-coral/15 text-yumm-coral",
   confirmed: "bg-yumm-lilac/15 text-yumm-lilac",
-  done: "bg-yumm-mint/20 text-emerald-700",
+  done: "bg-yumm-mint/30 text-emerald-700",
   cancelled: "bg-neutral-200 text-ink-muted",
 };
 
-export function DayDetailModal({ date, data, onClose }: DayDetailModalProps) {
+export function DayDetailModal({
+  date,
+  data,
+  isAdmin = false,
+  onClose,
+}: DayDetailModalProps) {
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -50,6 +54,22 @@ export function DayDetailModal({ date, data, onClose }: DayDetailModalProps) {
 
   const orderCount = data?.orders.length ?? 0;
   const unavailable = data?.isAvailable === false;
+
+  // LOGIKA BATAS TANGGAL (Maksimal 2 bulan ke depan)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const maxDate = new Date(today);
+  maxDate.setMonth(today.getMonth() + 2);
+  
+  const compareDate = new Date(date);
+  compareDate.setHours(0, 0, 0, 0);
+
+  const past = isPast(date);
+  const isTooFar = compareDate > maxDate;
+  
+  // Tombol hanya muncul jika: (Bukan tanggal lampau DAN tidak lebih dari 2 bulan) ATAU user adalah Admin
+  const canOrder = isAdmin || (!past && !isTooFar);
 
   return (
     <div
@@ -74,7 +94,7 @@ export function DayDetailModal({ date, data, onClose }: DayDetailModalProps) {
             aria-label="Tutup"
             className="rounded-full p-2 text-ink-muted transition-colors hover:bg-surface-muted"
           >
-            <X size={ICON_SIZE.md} />
+            ×
           </button>
         </div>
 
@@ -96,7 +116,7 @@ export function DayDetailModal({ date, data, onClose }: DayDetailModalProps) {
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
               {orderCount} pesanan
             </p>
-            {data!.orders.map((order: { id: string; status: string; customerName: string }) => (
+            {data!.orders.map((order) => (
               <div
                 key={order.id}
                 className="flex items-center justify-between gap-3 rounded-yumm border border-neutral-100 px-4 py-3"
@@ -123,12 +143,15 @@ export function DayDetailModal({ date, data, onClose }: DayDetailModalProps) {
           )
         )}
 
-        <a
-          href={`/order?date=${data?.date ?? ""}`}
-          className="block rounded-yumm bg-yumm-pink px-5 py-2.5 text-center font-display text-sm font-semibold text-white transition-colors hover:bg-yumm-coral"
-        >
-          Pesan di tanggal ini
-        </a>
+        {/* Hanya render tombol jika diizinkan */}
+        {canOrder && (
+          <Link
+            href={`/order?date=${data?.date ?? ""}`}
+            className="block rounded-yumm bg-yumm-pink px-5 py-2.5 text-center font-display text-sm font-semibold text-white transition-colors hover:bg-yumm-coral"
+          >
+            Pesan di tanggal ini
+          </Link>
+        )}
       </div>
     </div>
   );

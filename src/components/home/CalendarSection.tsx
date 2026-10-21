@@ -7,13 +7,10 @@ interface CalendarSectionProps {
   year: number;
   month: number;
   days: CalendarDayData[];
+  isAdmin?: boolean;
 }
 
-export function CalendarSection({
-  year,
-  month,
-  days,
-}: CalendarSectionProps) {
+export function CalendarSection({ year, month, days, isAdmin }: CalendarSectionProps) {
   const prevMonth = month === 0 ? 11 : month - 1;
   const prevYear = month === 0 ? year - 1 : year;
   const nextMonth = month === 11 ? 0 : month + 1;
@@ -31,7 +28,6 @@ export function CalendarSection({
           </p>
         </div>
 
-        {/* Navigasi Bulan */}
         <div className="mb-6 flex items-center justify-between gap-4">
           <Link
             href={`/?year=${prevYear}&month=${prevMonth}#kalender`}
@@ -53,7 +49,12 @@ export function CalendarSection({
         </div>
 
         <div id="kalender">
-          <CalendarGrid year={year} month={month} days={days} />
+          <CalendarGrid 
+            year={year} 
+            month={month} 
+            days={days} 
+            isAdmin={isAdmin}
+          />
         </div>
       </div>
     </section>

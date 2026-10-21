@@ -3,20 +3,17 @@
 import { useState } from "react";
 import { CalendarDay } from "./CalendarDay";
 import { DayDetailModal } from "./DayDetailModal";
-import { getCalendarGrid, getDayNames, toDateString} from "@/lib/calendar";
-import type {CalendarDayData } from "@/features/calendar/queries"
+import { getCalendarGrid, getDayNames, toDateString, type CalendarDayData } from "@/lib/calendar";
 
 interface CalendarGridProps {
   year: number;
   month: number;
   days: CalendarDayData[];
+  isAdmin?: boolean;
 }
 
-export function CalendarGrid({ year, month, days }: CalendarGridProps) {
-  const [selected, setSelected] = useState<{
-    date: Date;
-    data: CalendarDayData | null;
-  } | null>(null);
+export function CalendarGrid({ year, month, days, isAdmin }: CalendarGridProps) {
+  const [selected, setSelected] = useState<{ date: Date; data: CalendarDayData | null; } | null>(null);
 
   const grid = getCalendarGrid(year, month);
   const dayNames = getDayNames();
@@ -29,12 +26,11 @@ export function CalendarGrid({ year, month, days }: CalendarGridProps) {
   return (
     <>
       <div className="rounded-yumm-lg border border-neutral-100 bg-white p-4 shadow-sm sm:p-6">
+        {/* Judul getMonthName(month) dihapus dari sini */}
+        
         <div className="mb-2 grid grid-cols-7 gap-1">
           {dayNames.map((name) => (
-            <div
-              key={name}
-              className="py-2 text-center text-xs font-semibold uppercase tracking-wide text-ink-muted"
-            >
+            <div key={name} className="py-2 text-center text-xs font-semibold uppercase tracking-wide text-ink-muted">
               {name}
             </div>
           ))}
@@ -64,10 +60,11 @@ export function CalendarGrid({ year, month, days }: CalendarGridProps) {
       </div>
 
       {selected && (
-        <DayDetailModal
-          date={selected.date}
-          data={selected.data}
-          onClose={() => setSelected(null)}
+        <DayDetailModal 
+          date={selected.date} 
+          data={selected.data} 
+          isAdmin={isAdmin}
+          onClose={() => setSelected(null)} 
         />
       )}
     </>

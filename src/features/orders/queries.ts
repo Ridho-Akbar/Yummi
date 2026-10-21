@@ -6,6 +6,12 @@ import type { Product } from "@/types";
 export type OrderStatus = "pending" | "confirmed" | "done" | "cancelled";
 export type PaymentStatus = "unpaid" | "dp" | "paid";
 
+// Tipe untuk halaman Menu
+export interface MenuProduct extends Product {
+  totalSold: number;
+  badge?: "terbaru" | "terlaris" | "best_seller";
+}
+
 export async function getAvailableProducts(): Promise<Product[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -31,10 +37,9 @@ export async function getProductCapacitiesForDate(
 ): Promise<Record<string, ProductCapacity>> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc(
-    "get_product_capacity_for_date",
-    { p_order_date: orderDate }
-  );
+  const { data, error } = await supabase.rpc("get_product_capacity_for_date", {
+    p_order_date: orderDate,
+  });
 
   if (error) throw error;
 
@@ -225,7 +230,6 @@ export async function searchAdminOrders({
     : null;
   const { start, end } = getDateRange(dateFilter);
 
-  // List query
   let listQuery = supabase
     .from("orders")
     .select(LIST_COLUMNS)
@@ -237,7 +241,6 @@ export async function searchAdminOrders({
   if (start) listQuery = listQuery.gte("order_date", start);
   if (end) listQuery = listQuery.lte("order_date", end);
 
-  // Count query (same filters, head-only)
   let countQuery = supabase
     .from("orders")
     .select("*", { count: "exact", head: true })
@@ -258,7 +261,7 @@ export async function searchAdminOrders({
   if (countResult.error) throw countResult.error;
 
   return {
-    orders: (listResult.data ?? []).map((row: RawOrderRow) => mapRow(row)),
+    orders: (listResult.data ?? []).map((row) => mapRow(row)),
     total: countResult.count ?? 0,
   };
 }
@@ -315,10 +318,26 @@ export async function getAdminOrderDetailByCode(
   };
 }
 
-export interface MenuProduct extends Product {
-  totalSold: number;
-  badge?: "terbaru" | "terlaris" | "best_seller";
+export async function getDeletedOrders({
+  limit = 50,
+}: { limit?: number } = {}): Promise<AdminOrderListItem[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select(LIST_COLUMNS)
+    .not("deleted_at", "is", null)
+    .order("deleted_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+
+  return (data ?? []).map((row) => mapRow(row));
 }
+
+// ============================================
+// FUNGSI UNTUK HALAMAN MENU (READY STOCK)
+// ============================================
 
 export async function getMenuProducts(): Promise<MenuProduct[]> {
   const supabase = await createClient();

@@ -59,10 +59,11 @@ export async function saveSocialLinks(
   }
 
   const existingIds = new Set((existing ?? []).map((r) => r.id));
+  
   const incomingIds = new Set(
-    parsed.data.items
-      .filter((i): i is typeof i & { id: string } => i.id !== null)
-      .map((i) => i.id)
+    (parsed.data.items ?? [])
+      .filter((i) => i.id !== null)
+      .map((i) => i.id as string)
   );
 
   const toDelete = Array.from(existingIds).filter(
@@ -76,61 +77,46 @@ export async function saveSocialLinks(
     if (error) return { error: "Gagal menghapus data lama." };
   }
 
-  if (parsed.data.items.length > 0) {
-    const newItems: {
-      platform: string;
-      url: string;
-      sort_order: number;
-      is_active: boolean;
-    }[] = [];
-    
-    const existingItems: {
-      id: string;
-      platform: string;
-      url: string;
-      sort_order: number;
-      is_active: boolean;
-    }[] = [];
-    
-    parsed.data.items.forEach((item, index) => {
-      if (item.id === null) {
-        newItems.push({
-          platform: item.platform,
-          url: item.url,
-          sort_order: index,
-          is_active: item.isActive,
-        });
-      } else {
-        existingItems.push({
-          id: item.id,
-          platform: item.platform,
-          url: item.url,
-          sort_order: index,
-          is_active: item.isActive,
-        });
-      }
-    });
+  const newItems = (parsed.data.items ?? [])
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => item.id === null)
+    .map(({ item, index }) => ({
+      platform: item.platform,
+      url: item.url,
+      sort_order: index,
+      is_active: item.isActive,
+    }));
 
-    if (newItems.length > 0) {
-      const { error: insertError } = await supabase
-        .from("social_links")
-        .insert(newItems);
+  const existingItems = (parsed.data.items ?? [])
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => item.id !== null) // Hapus type predicate di sini
+    .map(({ item, index }) => ({
+      id: item.id as string, // Paksa TypeScript menganggapnya string karena sudah difilter
+      platform: item.platform,
+      url: item.url,
+      sort_order: index,
+      is_active: item.isActive,
+    }));
 
-      if (insertError) {
-        console.error("[saveSocialLinks] insert error:", insertError);
-        return { error: "Gagal menambah sosial media. Coba lagi." };
-      }
+  if (newItems.length > 0) {
+    const { error: insertError } = await supabase
+      .from("social_links")
+      .insert(newItems);
+
+    if (insertError) {
+      console.error("[saveSocialLinks] insert error:", insertError);
+      return { error: "Gagal menambah sosial media. Coba lagi." };
     }
+  }
 
-    if (existingItems.length > 0) {
-      const { error: updateError } = await supabase
-        .from("social_links")
-        .upsert(existingItems, { onConflict: "id" });
+  if (existingItems.length > 0) {
+    const { error: updateError } = await supabase
+      .from("social_links")
+      .upsert(existingItems, { onConflict: "id" });
 
-      if (updateError) {
-        console.error("[saveSocialLinks] update error:", updateError);
-        return { error: "Gagal memperbarui sosial media. Coba lagi." };
-      }
+    if (updateError) {
+      console.error("[saveSocialLinks] update error:", updateError);
+      return { error: "Gagal memperbarui sosial media. Coba lagi." };
     }
   }
 

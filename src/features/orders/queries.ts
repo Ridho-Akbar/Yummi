@@ -335,10 +335,6 @@ export async function getDeletedOrders({
   return (data ?? []).map((row) => mapRow(row));
 }
 
-// ============================================
-// FUNGSI UNTUK HALAMAN MENU (READY STOCK)
-// ============================================
-
 export async function getMenuProducts(): Promise<MenuProduct[]> {
   const supabase = await createClient();
 
@@ -350,9 +346,10 @@ export async function getMenuProducts(): Promise<MenuProduct[]> {
 
   if (productsRes.error) throw productsRes.error;
 
-  // 1. Map pins (hanya ambil 1 prioritas: terlaris > best_seller > terbaru)
   const pinsMap = new Map<string, "terbaru" | "terlaris" | "best_seller">();
-  const priority = { terlaris: 3, best_seller: 2, latest: 1 };
+  
+  // PERBAIKAN: Gunakan Record<string, number>
+  const priority: Record<string, number> = { terlaris: 3, best_seller: 2, terbaru: 1 };
   
   for (const pin of pinsRes.data ?? []) {
     const current = pinsMap.get(pin.product_id);
@@ -362,13 +359,11 @@ export async function getMenuProducts(): Promise<MenuProduct[]> {
     }
   }
 
-  // 2. Map total sales
   const salesMap = new Map<string, number>();
   for (const row of salesRes.data ?? []) {
     salesMap.set(row.product_id, Number(row.total_sold));
   }
 
-  // 3. Gabungkan data
   return (productsRes.data ?? []).map((p) => ({
     ...p,
     totalSold: salesMap.get(p.id) ?? 0,

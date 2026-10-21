@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { CalendarDay } from "./CalendarDay";
 import { DayDetailModal } from "./DayDetailModal";
-import { getCalendarGrid, getDayNames, toDateString, type CalendarDayData } from "@/lib/calendar";
+import { getCalendarGrid, getDayNames, toDateString } from "@/lib/calendar";
+import type { CalendarDayData } from "@/features/calendar/queries"; // Perbaikan import
 
 interface CalendarGridProps {
   year: number;
@@ -26,8 +27,6 @@ export function CalendarGrid({ year, month, days, isAdmin }: CalendarGridProps) 
   return (
     <>
       <div className="rounded-yumm-lg border border-neutral-100 bg-white p-4 shadow-sm sm:p-6">
-        {/* Judul getMonthName(month) dihapus dari sini */}
-        
         <div className="mb-2 grid grid-cols-7 gap-1">
           {dayNames.map((name) => (
             <div key={name} className="py-2 text-center text-xs font-semibold uppercase tracking-wide text-ink-muted">

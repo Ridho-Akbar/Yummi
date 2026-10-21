@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser,requireAdmin  } from "@/lib/auth";
 import { checkOrderRateLimit, recordOrderAttempt } from "@/lib/rate-limit";
 import { checkPasswordRateLimit, recordPasswordAttempt } from "@/lib/password-rate-limit";
 import { verifyPassword } from "@/lib/password";

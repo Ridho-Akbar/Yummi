@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { isSameMonth, isPast, type CalendarDayData } from "@/lib/calendar";
+import { isSameMonth, isPast } from "@/lib/calendar";
+import type { CalendarDayData } from "@/features/calendar/queries"; // Perbaikan import
 
 interface CalendarDayProps {
   date: Date;
@@ -18,8 +19,6 @@ export function CalendarDay({ date, currentYear, currentMonth, data, onClick }: 
   const unavailable = data?.isAvailable === false;
 
   const hasContent = orderCount > 0 || unavailable;
-  
-  // Tanggal lampau TETAP BISA DIKLIK agar bisa lihat data masa lalu
   const clickable = inMonth && (hasContent || !past);
 
   return (

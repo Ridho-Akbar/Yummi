@@ -59,10 +59,11 @@ export async function saveFaqList(
   }
 
   const existingIds = new Set((existing ?? []).map((r) => r.id));
+  
   const incomingIds = new Set(
-    parsed.data.items
-      .filter((i): i is typeof i & { id: string } => i.id !== null)
-      .map((i) => i.id)
+    (parsed.data.items ?? [])
+      .filter((i) => i.id !== null && i.id !== undefined)
+      .map((i) => i.id as string)
   );
 
   const toDelete = Array.from(existingIds).filter(
@@ -79,7 +80,7 @@ export async function saveFaqList(
     sort_order: number;
     is_active: boolean;
   }[] = [];
-  
+
   const existingItems: {
     id: string;
     question: string;
@@ -87,9 +88,10 @@ export async function saveFaqList(
     sort_order: number;
     is_active: boolean;
   }[] = [];
-  
-  parsed.data.items.forEach((item, index) => {
-    if (item.id === null) {
+
+  (parsed.data.items ?? []).forEach((item, index) => {
+    // Cek apakah item ini baru (id null/undefined) atau lama (ada id)
+    if (!item.id) {
       newItems.push({
         question: item.question,
         answer: item.answer,
@@ -98,7 +100,7 @@ export async function saveFaqList(
       });
     } else {
       existingItems.push({
-        id: item.id,
+        id: item.id, // TypeScript sekarang 100% yakin ini string
         question: item.question,
         answer: item.answer,
         sort_order: index,

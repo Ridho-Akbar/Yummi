@@ -19,7 +19,7 @@ export default async function AdminDashboardPage() {
           Dasbor
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
-          Ringkasan aktivitas Yumm! hari ini.
+          Ringkasan aktivitas hari ini.
         </p>
       </header>
 

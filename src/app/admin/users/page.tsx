@@ -11,7 +11,7 @@ import type { UserRole } from "@/features/users/types";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
-  title: "Pengguna — Admin Yumm!",
+  title: "Pengguna — Admin",
 };
 
 const VALID_ROLES: UserRole[] = ["user", "admin", "superadmin"];

@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { SignInButton } from "@/components/auth/SignInButton";
 
 export const metadata = {
-  title: "Masuk — Yumm!",
+  title: "Masuk",
 };
 
 interface LoginPageProps {
@@ -95,7 +95,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         <div className="relative">
           <p className="text-xs text-white/60">
-            &copy; {new Date().getFullYear()} Yumm! All rights reserved.
+            &copy; {new Date().getFullYear()} Copyright All rights reserved.
           </p>
         </div>
       </aside>
@@ -202,7 +202,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             >
               ketentuan layanan
             </Link>{" "}
-            Yumm!.
+            kami.
           </p>
         </div>
       </div>

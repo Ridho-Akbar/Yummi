@@ -3,7 +3,7 @@ import { ArrowRight, CalendarDays, Home, ShoppingCart } from "lucide-react";
 import { ICON_SIZE } from "@/lib/icons";
 
 export const metadata = {
-  title: "Halaman Tidak Ditemukan — Yumm!",
+  title: "Halaman Tidak Ditemukan",
   description:
     "Halaman yang kamu cari tidak ada atau sudah dipindahkan.",
 };

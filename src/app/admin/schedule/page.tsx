@@ -8,7 +8,7 @@ import { BulkScheduleModal } from "@/components/admin/BulkScheduleModal";
 import { getMonthName } from "@/lib/calendar";
 
 export const metadata = {
-  title: "Jadwal — Admin Yumm!",
+  title: "Jadwal — Admin",
 };
 
 interface SchedulePageProps {

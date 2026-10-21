@@ -1,12 +1,12 @@
 # Yumm!
 
-Website pre-order makanan viral. Pelanggan memesan untuk tanggal acara tertentu. Admin kelola pesanan, produk, jadwal, pembayaran, dan laporan dari satu dashboard.
+Website pre-order makanan viral. Pelanggan memesan untuk tanggal acara tertentu. Admin mengelola pesanan, produk, jadwal, pembayaran, dan laporan dari satu dashboard.
 
 **Dokumentasi lengkap:** buka halaman berikut saat aplikasi berjalan.
 
-- `/documentation/features` — daftar fitur untuk calon pengguna
-- `/documentation/admin-guide` — panduan penggunaan dashboard untuk admin non-teknis
-- `/documentation/developer` — panduan setup, query SQL penting, dan cara recovery
+- [`/documentation/features`](http://localhost:3000/documentation/features) — daftar fitur untuk calon pengguna
+- [`/documentation/admin-guide`](http://localhost:3000/documentation/admin-guide) — panduan penggunaan dashboard untuk admin non-teknis
+- [`/documentation/developer`](http://localhost:3000/documentation/developer) — panduan setup, query SQL penting, dan cara recovery
 
 ## Tech Stack
 
@@ -16,7 +16,7 @@ Website pre-order makanan viral. Pelanggan memesan untuk tanggal acara tertentu.
 | React | 19.2.8 | UI library |
 | TypeScript | 5.x (strict) | Bahasa utama |
 | Tailwind CSS | 4.x | Styling, theme tokens di CSS |
-| Supabase | Postgres + Auth + Storage + RLS | Backend |
+| Supabase | — | Postgres + Auth + Storage + RLS |
 | Google OAuth | via Supabase | Login |
 | lucide-react | terbaru | Ikon |
 | Telegram Bot API | — | Notifikasi real-time |
@@ -34,11 +34,11 @@ cp .env.example .env.local   # lalu isi nilainya
 pnpm dev
 ```
 
-Untuk setup database lengkap, environment variables, dan Google OAuth, buka halaman `/documentation/developer` setelah aplikasi berjalan. Semua query SQL penting ada di sana sebagai blok yang bisa dibuka-tutup.
+Setup database lengkap, environment variables, dan Google OAuth dijelaskan di halaman `/documentation/developer` setelah aplikasi berjalan. Semua query SQL penting tersedia di sana sebagai blok yang bisa dibuka-tutup.
 
 ## Standar Development
 
-Standar ini berlaku untuk semua kontribusi ke proyek ini. Konsistensi lebih penting daripada preferensi pribadi.
+Standar ini berlaku untuk semua kontribusi. Konsistensi lebih penting daripada preferensi pribadi.
 
 ### Struktur Folder
 
@@ -73,12 +73,12 @@ src/
 ### Aturan File dan Penamaan
 
 - Satu file, satu tanggung jawab. Maksimal 200 baris. Kalau lebih, pecah.
-- Nama file dan folder: bahasa Inggris, lowercase. Contoh: `order-form.tsx` bukan `form-pesanan.tsx`.
+- Nama file dan folder: bahasa Inggris, lowercase. Contoh: `order-form.tsx`, bukan `form-pesanan.tsx`.
 - Nama komponen: PascalCase. Contoh: `OrderForm`, `ProductModal`.
 - Nama file komponen: sama dengan nama komponen. Contoh: `OrderForm.tsx`.
 - Nama fungsi: camelCase, kata kerja di depan. Contoh: `getAvailableProducts`, `updateOrderStatus`.
 - Nama variabel: camelCase, deskriptif. Hindari singkatan yang tidak jelas.
-- Teks yang dilihat user: bahasa Indonesia. Contoh: “Pesan Sekarang”, “Belum dikonfirmasi”.
+- Teks yang dilihat user: bahasa Indonesia. Contoh: `"Pesan Sekarang"`, `"Belum dikonfirmasi"`.
 - Kode, komentar, dan commit message: bahasa Inggris.
 
 ### Server Component vs Client Component
@@ -116,7 +116,7 @@ src/
 ### Styling
 
 - Tailwind utility-first. Jangan buat kelas CSS baru kecuali terpaksa.
-- Token warna, radius, font didefinisikan di `@theme` dalam `globals.css`. Jangan hardcode hex/rgb di `className`.
+- Token warna, radius, font didefinisikan di `@theme` dalam `globals.css`. Jangan hardcode hex/rgb di className.
 - Nama token berdasarkan fungsi, bukan nilai. Contoh: `--color-surface`, bukan `--color-gray-100`.
 - Urutan kelas Tailwind:
   1. Layout (`display`, `position`, `z-index`, `overflow`)
@@ -143,7 +143,7 @@ src/
 ### Komentar
 
 - Komentar hanya untuk hal yang tidak jelas dari kode: alasan keputusan, batasan, jebakan.
-- Jangan komentari hal yang sudah jelas. `// increment counter` di atas `counter++` tidak berguna.
+- Jangan komentari hal yang sudah jelas.
 - Tulis komentar dalam bahasa Inggris.
 
 ### Git
@@ -156,8 +156,6 @@ src/
 - Jangan commit `.env.local`. Sudah ada di `.gitignore`.
 
 ## Environment Variables
-
-Ringkasan variabel yang dibutuhkan. Detail ada di `/documentation/developer`.
 
 | Variabel | Kegunaan | Eksposur |
 |---|---|---|

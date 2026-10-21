@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export const metadata = {
-  title: "Ketentuan Layanan — Yumm!",
+  title: "Ketentuan Layanan",
   description:
     "Ketentuan pemesanan, kebijakan privasi, dan kebijakan pengembalian dana Yumm!.",
 };

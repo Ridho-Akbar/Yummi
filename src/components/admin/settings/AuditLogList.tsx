@@ -9,7 +9,7 @@ interface AuditLogListProps {
 const KEY_LABELS: Record<string, string> = {
   store_info: "Info Toko",
   hero: "Hero Section",
-  why_choose: "Kenapa Pilih Yumm",
+  why_choose: "Kenapa Pilih Kami",
   how_to_order: "Cara Pesan",
   whatsapp: "Konfigurasi WhatsApp",
   footer: "Footer",

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Warna colorful untuk brand Yumm! */
+  /* Warna colorful untuk brand */
   --color-yumm-pink: oklch(0.72 0.18 350);
   --color-yumm-peach: oklch(0.82 0.14 45);
   --color-yumm-lilac: oklch(0.75 0.15 290);

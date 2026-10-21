@@ -7,7 +7,7 @@ import { ICON_SIZE } from "@/lib/icons";
 import type { TopProduct, TopCustomer } from "@/features/reports/types";
 
 export const metadata = {
-  title: "Laporan — Admin Yumm!",
+  title: "Laporan — Admin",
 };
 
 interface ReportsPageProps {

@@ -34,7 +34,7 @@ export function buildReportCsv(data: ReportData): string {
   const lines: string[] = [];
 
   // Header
-  lines.push(row(["Laporan Yumm!"]));
+  lines.push(row(["Laporan"]));
   lines.push(row([`Periode: ${data.periodLabel}`]));
   lines.push(
     row([`Rentang: ${formatDate(data.startDate)} - ${formatDate(data.endDate)}`])

@@ -74,7 +74,7 @@ export function FooterForm({ initial }: FooterFormProps) {
             name="copyright"
             type="text"
             defaultValue={initial.copyright}
-            placeholder="© 2026 Yumm! All rights reserved."
+            placeholder="©Copyright 2026"
             className={cn(
               "w-full rounded-yumm border border-neutral-200 bg-surface px-4 py-2.5",
               "font-body text-sm text-ink placeholder:text-ink-muted/50",

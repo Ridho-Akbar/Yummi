@@ -12,7 +12,7 @@ import { DeleteOrderButton } from "@/components/admin/DeleteOrderButton";
 import { OrderTimeline } from "@/components/admin/OrderTimeline";
 
 export const metadata = {
-  title: "Detail Pesanan — Admin Yumm!",
+  title: "Detail Pesanan — Admin",
 };
 
 interface OrderDetailPageProps {

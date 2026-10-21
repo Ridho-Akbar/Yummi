@@ -8,7 +8,7 @@ import { getSiteSettings } from "@/features/site/queries";
 import { HomepagePinManager } from "@/components/admin/homepage/HomepagePinManager";
 
 export const metadata = {
-  title: "Produk Unggulan — Admin Yumm!",
+  title: "Produk Unggulan — Admin",
 };
 
 export default async function AdminHomepagePage() {

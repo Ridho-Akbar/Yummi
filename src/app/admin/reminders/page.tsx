@@ -12,7 +12,7 @@ import type {
 } from "@/features/reminders/types";
 
 export const metadata = {
-  title: "Pengingat — Admin Yumm!",
+  title: "Pengingat — Admin",
 };
 
 const CATEGORY_META: Record<

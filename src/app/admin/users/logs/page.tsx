@@ -6,7 +6,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import type { LogDaysFilter } from "@/features/users/types";
 
 export const metadata = {
-  title: "Riwayat Role — Admin Yumm!",
+  title: "Riwayat Role — Admin",
 };
 
 const PER_PAGE = 20;

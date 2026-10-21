@@ -14,7 +14,7 @@ import {
 } from "@/features/orders/queries";
 
 export const metadata = {
-  title: "Pesanan — Admin Yumm!",
+  title: "Pesanan — Admin",
 };
 
 const VALID_STATUSES: OrderStatus[] = [

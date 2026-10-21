@@ -2,7 +2,7 @@ import { getActiveCarouselImages } from "@/features/carousel/queries";
 import { CarouselManager } from "@/components/admin/CarouselManager";
 
 export const metadata = {
-  title: "Carousel Menu — Admin Yumm!",
+  title: "Carousel Menu — Admin",
 };
 
 export default async function AdminCarouselPage() {

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import type { Product } from "@/types";
 
 export const metadata = {
-  title: "Produk — Admin Yumm!",
+  title: "Produk — Admin",
 };
 
 export default async function AdminProductsPage() {

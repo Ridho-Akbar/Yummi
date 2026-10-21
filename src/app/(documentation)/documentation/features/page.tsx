@@ -19,12 +19,15 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import { getSiteSettings } from "@/features/site/queries";
 
-export const metadata = {
-  title: "Fitur — Yumm!",
-  description:
-    "Fitur lengkap Yumm! untuk bisnis makanan pre-order: dari kalender pesanan pelanggan sampai dashboard admin.",
-};
+export async function generateMetadata() {
+  const settings = await getSiteSettings();
+  return {
+    title: `Fitur — ${settings.storeInfo.name}`,
+    description: `Fitur lengkap ${settings.storeInfo.name} untuk bisnis makanan pre-order.`,
+  };
+}
 
 // ============================================
 // DATA
@@ -33,23 +36,23 @@ export const metadata = {
 const CUSTOMER_POINTS = [
   {
     Icon: CalendarDays,
-    title: "Kalender ketersediaan",
-    desc: "Pelanggan langsung lihat tanggal mana yang masih kosong, tanpa perlu tanya lewat chat.",
+    title: "Kalender Ketersediaan",
+    desc: "Pelanggan langsung lihat tanggal mana yang masih kosong untuk pre-order, tanpa perlu tanya lewat chat.",
   },
   {
     Icon: ShoppingCart,
-    title: "Pesan tanpa daftar",
-    desc: "Login Google opsional. Bisa pesan anonim pakai sandi akses dari admin.",
+    title: "Menu Hari Ini (Ready)",
+    desc: "Katalog khusus makanan siap antar hari ini. Lengkap dengan filter, badge, dan info stok real-time.",
   },
   {
     Icon: Receipt,
-    title: "Kode pesanan unik",
-    desc: "Setiap pesanan dapat kode seperti YUM-202610-0042, mudah disebutkan lewat WhatsApp.",
+    title: "Keranjang & Kode Unik",
+    desc: "Pelanggan bisa memasukkan banyak produk ke keranjang melayang, lalu dapat kode pesanan seperti YUM-202610-0042.",
   },
   {
     Icon: Bell,
-    title: "Pengingat kapasitas",
-    desc: "Kalau slot tanggal hampir penuh, pelanggan lihat sisa kapasitasnya sebelum memesan.",
+    title: "Pesan Tanpa Daftar",
+    desc: "Login Google opsional. Pelanggan bisa pesan anonim lebih cepat menggunakan sandi akses dari admin.",
   },
 ];
 
@@ -73,6 +76,23 @@ const ADMIN_GROUPS = [
     },
   },
   {
+    Icon: Package,
+    groupTitle: "Kelola Produk & Stok",
+    groupDesc:
+      "Atur katalog makanan, harga, dan ketersediaan. Kamu bisa mengatur Stok Jadi (Ready) dan Kapasitas Pre-Order secara terpisah.",
+    items: [
+      "Upload gambar produk langsung dari dashboard",
+      "Restock cepat dengan tombol pintas (+) dan (-)",
+      "Atur minimum order per produk",
+      "Sembunyikan produk dari form pesanan kalau habis",
+    ],
+    screenshot: {
+      src: "/documentation/09-admin-products.png",
+      alt: "Manajemen produk admin",
+      caption: "Manajemen produk dengan gambar dan tombol restock cepat",
+    },
+  },
+  {
     Icon: Wallet,
     groupTitle: "Kelola Pembayaran",
     groupDesc:
@@ -81,29 +101,11 @@ const ADMIN_GROUPS = [
       "Tandai pesanan: belum bayar, DP, atau lunas",
       "Preset nominal cepat: Rp50rb, Rp100rb, Rp200rb",
       "Sisa tagihan dihitung otomatis",
-      "Riwayat perubahan pembayaran tersimpan",
     ],
     screenshot: {
       src: "/documentation/08-admin-order-detail.png",
       alt: "Detail pesanan dengan panel pembayaran",
       caption: "Detail pesanan: status, timeline, dan panel pembayaran",
-    },
-  },
-  {
-    Icon: Package,
-    groupTitle: "Kelola Produk",
-    groupDesc:
-      "Tambah, edit, dan atur katalog makanan tanpa bantuan developer. Upload gambar langsung dari dashboard.",
-    items: [
-      "Upload gambar produk dari dashboard",
-      "Atur harga, minimum order, dan kapasitas per hari",
-      "Restock cepat dengan tombol pintas",
-      "Sembunyikan produk dari form pesanan kalau habis",
-    ],
-    screenshot: {
-      src: "/documentation/09-admin-products.png",
-      alt: "Manajemen produk admin",
-      caption: "Manajemen produk dengan gambar dan tombol restock cepat",
     },
   },
   {
@@ -114,7 +116,6 @@ const ADMIN_GROUPS = [
     items: [
       "Tandai tanggal libur atau tutup",
       "Bulk action untuk tutup rentang tanggal panjang",
-      "Atur kapasitas maksimal per produk per hari",
       "Auto-deteksi produk yang hampir limit",
     ],
     screenshot: {
@@ -149,11 +150,11 @@ const MONITOR_GROUPS = [
   {
     Icon: Settings,
     title: "Konten Fleksibel",
-    desc: "Ubah tagline, hero, FAQ, sosmed, dan produk unggulan kapan saja — tanpa perlu kontak developer.",
+    desc: "Ubah tagline, hero, produk unggulan, gambar carousel menu, dan FAQ kapan saja — tanpa perlu kontak developer.",
     screenshot: {
       src: "/documentation/13-admin-settings.png",
       alt: "Halaman pengaturan admin",
-      caption: "Pengaturan dengan 10 tab untuk semua konten halaman depan",
+      caption: "Pengaturan terpusat untuk semua konten halaman depan dan menu",
     },
   },
 ];
@@ -162,7 +163,7 @@ const HIGHLIGHT_FEATURES = [
   {
     Icon: CalendarClock,
     title: "Pengingat Otomatis",
-    desc: "Sistem otomatis memberi tahu admin tanggal mana yang butuh perhatian — H-2, H-1, hari H, bahkan yang sudah lewat. Admin tidak akan lupa pesanan penting.",
+    desc: "Sistem otomatis memberi tahu admin tanggal mana yang butuh perhatian — H-2, H-1, hari H, bahkan yang sudah lewat.",
     color: "yumm-pink" as const,
   },
   {
@@ -174,7 +175,7 @@ const HIGHLIGHT_FEATURES = [
   {
     Icon: TrendingUp,
     title: "Kapasitas Terkontrol",
-    desc: "Sistem menolak konfirmasi pesanan kalau kapasitas produksi di tanggal itu sudah penuh. Tidak akan kelebihan pesanan yang tidak bisa dipenuhi.",
+    desc: "Sistem menolak konfirmasi pesanan kalau kapasitas produksi di tanggal itu sudah penuh. Tidak akan kelebihan pesanan.",
     color: "yumm-mint" as const,
   },
 ];
@@ -183,39 +184,41 @@ const HIGHLIGHT_FEATURES = [
 // PAGE
 // ============================================
 
-export default function FeaturesPage() {
+export default async function FeaturesPage() {
+  const settings = await getSiteSettings();
+
   return (
     <div className="min-h-dvh bg-surface">
-      {/* Header */}
+      {/* HEADER SERAGAM */}
       <header className="sticky top-0 z-30 border-b border-neutral-100 bg-surface/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
           <Link
             href="/"
-            className="font-display text-2xl font-bold text-yumm-pink"
+            className="max-w-[150px] truncate font-display text-2xl font-bold text-yumm-pink sm:max-w-[200px]"
+            title={settings.storeInfo.name}
           >
-            Yumm!
+            {settings.storeInfo.name}
           </Link>
-          <div className="flex items-center gap-2">
+          <nav className="flex items-center gap-1 sm:gap-2">
+            <Link
+              href="/documentation/features"
+              className="rounded-full bg-yumm-pink/10 px-3 py-2 text-sm font-semibold text-yumm-pink sm:px-4"
+            >
+              Fitur
+            </Link>
             <Link
               href="/documentation/admin-guide"
-              className="hidden text-sm font-semibold text-ink-muted transition-colors hover:text-yumm-pink sm:inline-block"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink sm:px-4"
             >
               Panduan Admin
             </Link>
             <Link
               href="/documentation/developer"
-              className="hidden text-sm font-semibold text-ink-muted transition-colors hover:text-yumm-pink sm:inline-block"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink sm:px-4"
             >
               Developer
             </Link>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 rounded-yumm px-4 py-2 font-display text-sm font-semibold text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink"
-            >
-              <ArrowLeft size={16} strokeWidth={2.5} />
-              Beranda
-            </Link>
-          </div>
+          </nav>
         </div>
       </header>
 
@@ -224,23 +227,23 @@ export default function FeaturesPage() {
         <section className="px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-3xl text-center">
             <p className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-yumm-pink">
-              Fitur Yumm!
+              Fitur {settings.storeInfo.name}
             </p>
             <h1 className="mt-4 font-display text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl lg:text-5xl">
-              Semua yang kamu butuhkan untuk jualan pre-order
+              Semua yang kamu butuhkan untuk jualan pre-order & ready stock
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg">
-              Yumm! dibuat khusus untuk bisnis makanan yang menerima pesanan
-              untuk tanggal tertentu. Pelanggan pesan online, kamu kelola
-              semuanya dari satu dashboard — tanpa perlu buka kode.
+              {settings.storeInfo.name} dibuat khusus untuk bisnis makanan yang menerima pesanan
+              untuk tanggal acara maupun pesanan siap antar hari ini. Pelanggan pesan online, 
+              kamu kelola semuanya dari satu dashboard — tanpa perlu buka kode.
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
-                href="/order"
+                href="/menu"
                 className="group inline-flex items-center gap-2 rounded-full bg-yumm-pink px-6 py-3 font-display text-sm font-semibold text-white shadow-lg shadow-yumm-pink/25 transition-all hover:-translate-y-0.5 hover:bg-yumm-coral"
               >
-                Coba pesan sekarang
+                Coba menu hari ini
                 <ArrowRight
                   size={16}
                   strokeWidth={2.5}
@@ -259,7 +262,7 @@ export default function FeaturesPage() {
           <div className="mx-auto mt-16 max-w-4xl">
             <Screenshot
               src="/documentation/01-homepage.png"
-              alt="Beranda Yumm! dengan kalender pesanan"
+              alt="Beranda dengan kalender pesanan"
               caption="Beranda dengan hero, kalender ketersediaan, dan produk unggulan"
               priority
             />
@@ -283,7 +286,6 @@ export default function FeaturesPage() {
               </p>
             </div>
 
-            {/* Feature points */}
             <div className="mb-10 grid gap-3 sm:grid-cols-2">
               {CUSTOMER_POINTS.map((point) => (
                 <div
@@ -309,26 +311,18 @@ export default function FeaturesPage() {
               ))}
             </div>
 
-            {/* Screenshots */}
+            {/* Screenshots Menu & Keranjang */}
             <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
               <Screenshot
-                src="/documentation/02-order-form.png"
-                alt="Form pesanan dengan keranjang"
-                caption="Form pesanan dengan keranjang dan badge kapasitas"
+                src="/documentation/14-menu-page.png"
+                alt="Halaman menu hari ini"
+                caption="Halaman Menu Hari Ini dengan filter dan badge produk"
               />
               <Screenshot
-                src="/documentation/03-order-mobile.png"
-                alt="Form pesanan di mobile"
-                caption="Keranjang mengambang di mobile"
+                src="/documentation/15-floating-cart.png"
+                alt="Keranjang mengambang di mobile"
+                caption="Keranjang melayang untuk checkout cepat"
                 device="mobile"
-              />
-            </div>
-
-            <div className="mt-6">
-              <Screenshot
-                src="/documentation/04-order-success.png"
-                alt="Halaman sukses dengan kode pesanan"
-                caption="Setelah submit, pelanggan langsung dapat kode pesanan"
               />
             </div>
           </div>
@@ -351,7 +345,6 @@ export default function FeaturesPage() {
               </p>
             </div>
 
-            {/* Dashboard screenshot */}
             <div className="mb-10">
               <Screenshot
                 src="/documentation/05-admin-dashboard.png"
@@ -360,7 +353,6 @@ export default function FeaturesPage() {
               />
             </div>
 
-            {/* Admin groups with screenshots */}
             <div className="space-y-12">
               {ADMIN_GROUPS.map((group) => (
                 <AdminGroupCard key={group.groupTitle} group={group} />
@@ -401,10 +393,10 @@ export default function FeaturesPage() {
                 Yang Membedakan
               </p>
               <h2 className="mt-2 font-display text-2xl font-bold text-ink sm:text-3xl">
-                Fitur unggulan Yumm!
+                Fitur unggulan {settings.storeInfo.name}
               </h2>
               <p className="mt-3 text-sm text-ink-muted sm:text-base">
-                Tiga hal yang membuat Yumm! lebih dari sekadar website biasa.
+                Tiga hal yang membuat {settings.storeInfo.name} lebih dari sekadar website biasa.
               </p>
             </div>
 
@@ -423,15 +415,15 @@ export default function FeaturesPage() {
               Siap coba?
             </h2>
             <p className="mt-3 text-sm text-white/90 sm:text-base">
-              Buat pesanan percobaan dan lihat sendiri bagaimana Yumm!
+              Buat pesanan percobaan dan lihat sendiri bagaimana {settings.storeInfo.name}
               bekerja dari sisi pelanggan dan admin.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
-                href="/order"
+                href="/menu"
                 className="rounded-full bg-white px-6 py-3 font-display text-sm font-semibold text-yumm-pink shadow-lg transition-transform hover:-translate-y-0.5"
               >
-                Coba pesan
+                Coba menu
               </Link>
               <Link
                 href="/documentation/admin-guide"
@@ -451,13 +443,13 @@ export default function FeaturesPage() {
             href="/"
             className="font-display text-2xl font-bold text-yumm-pink"
           >
-            Yumm!
+            {settings.storeInfo.name}
           </Link>
           <p className="mt-2 text-sm text-ink-muted">
-            Platform pre-order makanan viral untuk bisnis kue dan katering.
+            Platform pre-order & ready stock makanan viral untuk bisnis kue dan katering.
           </p>
           <p className="mt-4 text-xs text-ink-muted">
-            &copy; {new Date().getFullYear()} Yumm! All rights reserved.
+            &copy; {new Date().getFullYear()} {settings.storeInfo.name}. All rights reserved.
           </p>
         </div>
       </footer>

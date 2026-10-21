@@ -1,23 +1,26 @@
 import Link from "next/link";
-import { ArrowLeft, AlertCircle, Lock, Database } from "lucide-react";
+import { AlertCircle, Lock, Database, Shield } from "lucide-react";
 import { CollapsibleCode } from "../_components/CollapsibleCode";
+import { getSiteSettings } from "@/features/site/queries";
 
-export const metadata = {
-  title: "Developer Documentation — Yumm!",
-  description:
-    "Panduan setup, query SQL penting, dan konfigurasi untuk developer Yumm!.",
-};
+export async function generateMetadata() {
+  const settings = await getSiteSettings();
+  return {
+    title: `Developer Documentation — ${settings.storeInfo.name}`,
+    description: `Panduan setup, query SQL penting, dan konfigurasi untuk developer ${settings.storeInfo.name}.`,
+  };
+}
 
 const ENV_VARIABLES = `NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOi...
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...
 IP_HASH_SALT=string-acak-panjang
-NEXT_PUBLIC_SITE_URL=https://yummi.vercel.app
+NEXT_PUBLIC_SITE_URL=https://domain-kamu.com
 TELEGRAM_BOT_TOKEN=7234567890:AAH...
 TELEGRAM_CHAT_ID=123456789`;
 
 const SETUP_SQL = `-- ============================================
--- YUMM! SETUP SQL
+-- YUMM! SETUP SQL (VERSI TERBARU)
 -- Jalankan semua blok ini di Supabase SQL Editor
 -- pada project yang baru. Urutan penting, jangan diubah.
 -- ============================================
@@ -164,6 +167,14 @@ create table public.homepage_pins (
   unique (category, product_id)
 );
 
+-- TABEL BARU: UNTUK GAMBAR CAROUSEL DI HALAMAN MENU
+create table public.carousel_images (
+  id uuid primary key default gen_random_uuid(),
+  image_url text not null,
+  sort_order int not null default 0,
+  created_at timestamptz default now()
+);
+
 create table public.settings_audit_logs (
   id uuid primary key default gen_random_uuid(),
   key text not null,
@@ -190,6 +201,7 @@ create index capacity_alerts_product_date_idx on public.capacity_alerts (product
 create index faqs_sort_order_idx on public.faqs (sort_order, created_at);
 create index social_links_sort_order_idx on public.social_links (sort_order, created_at);
 create index homepage_pins_category_idx on public.homepage_pins (category, sort_order);
+create index carousel_images_sort_order_idx on public.carousel_images (sort_order, created_at);
 create index settings_audit_logs_created_at_idx on public.settings_audit_logs (created_at desc);
 create index settings_audit_logs_key_idx on public.settings_audit_logs (key, created_at desc);`;
 
@@ -300,6 +312,7 @@ alter table public.site_settings enable row level security;
 alter table public.faqs enable row level security;
 alter table public.social_links enable row level security;
 alter table public.homepage_pins enable row level security;
+alter table public.carousel_images enable row level security;
 alter table public.settings_audit_logs enable row level security;
 
 -- Profiles
@@ -372,6 +385,12 @@ create policy "Admin full access social links" on public.social_links
 create policy "Admin full access homepage pins" on public.homepage_pins
   for all using (public.is_admin());
 
+-- Carousel Images
+create policy "Public read carousel" on public.carousel_images
+  for select using (true);
+create policy "Admin full access carousel" on public.carousel_images
+  for all using (public.is_admin());
+
 -- Settings Audit Logs
 create policy "Admin view settings audit logs" on public.settings_audit_logs
   for select using (public.is_admin());
@@ -418,13 +437,7 @@ set role = 'superadmin'
 where id = (
   select id from auth.users
   where email = 'GANTI-DENGAN-EMAIL-ANDA@gmail.com'
-);
-
--- Verifikasi
-select u.email, p.role
-from public.profiles p
-join auth.users u on u.id = p.id
-where p.role = 'superadmin';`;
+);`;
 
 const RECOVERY_SQL = `-- Recovery: kalau superadmin terkunci atau semua superadmin hilang.
 -- Jalankan ini di SQL Editor, hanya bisa dilakukan oleh
@@ -566,24 +579,41 @@ select jobname, schedule, command
 from cron.job
 order by jobname;`;
 
-export default function DeveloperDocumentationPage() {
+export default async function DeveloperDocumentationPage() {
+  const settings = await getSiteSettings();
+
   return (
     <div className="min-h-dvh bg-surface">
-      <header className="border-b border-neutral-100 bg-white">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4 sm:px-6">
+      {/* HEADER SERAGAM */}
+      <header className="sticky top-0 z-30 border-b border-neutral-100 bg-surface/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
           <Link
             href="/"
-            className="font-display text-2xl font-bold text-yumm-pink"
+            className="max-w-[150px] truncate font-display text-2xl font-bold text-yumm-pink sm:max-w-[200px]"
+            title={settings.storeInfo.name}
           >
-            Yumm!
+            {settings.storeInfo.name}
           </Link>
-          <Link
-            href="/documentation/features"
-            className="inline-flex items-center gap-1.5 rounded-yumm px-4 py-2 font-display text-sm font-semibold text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink"
-          >
-            <ArrowLeft size={16} strokeWidth={2.5} />
-            Fitur
-          </Link>
+          <nav className="flex items-center gap-1 sm:gap-2">
+            <Link
+              href="/documentation/features"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink sm:px-4"
+            >
+              Fitur
+            </Link>
+            <Link
+              href="/documentation/admin-guide"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink sm:px-4"
+            >
+              Panduan Admin
+            </Link>
+            <Link
+              href="/documentation/developer"
+              className="rounded-full bg-yumm-pink/10 px-3 py-2 text-sm font-semibold text-yumm-pink sm:px-4"
+            >
+              Developer
+            </Link>
+          </nav>
         </div>
       </header>
 
@@ -596,7 +626,7 @@ export default function DeveloperDocumentationPage() {
             Panduan Setup dan Query Penting
           </h1>
           <p className="mt-4 text-base text-ink-muted">
-            Halaman ini berisi semua langkah untuk setup Yumm! dari nol,
+            Halaman ini berisi semua langkah untuk setup {settings.storeInfo.name} dari nol,
             query SQL penting untuk operasional lanjutan, dan cara-cara
             recovery kalau ada masalah. Klik setiap judul untuk membuka
             detail.
@@ -702,6 +732,39 @@ export default function DeveloperDocumentationPage() {
             </span>
             <div>
               <h3 className="font-display text-base font-bold text-ink">
+                Catatan Arsitektur (Menu & Keranjang)
+              </h3>
+              <ul className="mt-3 space-y-2 text-sm text-ink-muted">
+                <li className="flex gap-2">
+                  <span className="text-yumm-pink">•</span>
+                  <span>
+                    Halaman <strong>Menu</strong> menggunakan fitur <em>Client Component</em> untuk mengelola keranjang belanja secara lokal (menggunakan state React) sebelum pelanggan diarahkan ke form order.
+                  </span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-yumm-pink">•</span>
+                  <span>
+                    Ketika pelanggan menekan tombol "Lanjut" pada keranjang melayang, sistem akan me-redirect ke URL dengan format <code>/order?items=id1:qty1,id2:qty2</code>.
+                  </span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-yumm-pink">•</span>
+                  <span>
+                    Form Order di halaman berikutnya akan mem-parsing parameter URL tersebut dan memasukkannya ke dalam state keranjang form.
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-yumm-lg border border-neutral-100 bg-white p-6 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-yumm-lilac/15 text-yumm-lilac">
+              <Shield size={18} strokeWidth={2.2} />
+            </span>
+            <div>
+              <h3 className="font-display text-base font-bold text-ink">
                 Catatan Keamanan
               </h3>
               <ul className="mt-3 space-y-2 text-sm text-ink-muted">
@@ -711,47 +774,13 @@ export default function DeveloperDocumentationPage() {
                     <code className="rounded bg-surface-muted px-1">
                       SUPABASE_SERVICE_ROLE_KEY
                     </code>{" "}
-                    bypass RLS. Jangan pernah commit ke Git atau ekspos ke
-                    client.
+                    bypass RLS. Jangan pernah commit ke Git atau ekspos ke client.
                   </span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-yumm-pink">•</span>
                   <span>
-                    Rotasi service role key segera setelah serah terima ke
-                    pembeli, dan setiap 6 bulan sekali sebagai praktik
-                    keamanan.
-                  </span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-yumm-pink">•</span>
-                  <span>
-                    Autentikasi dua faktor (2FA) belum diimplementasi.
-                    Untuk penggunaan enterprise, pertimbangkan menambahkan
-                    TOTP untuk akun superadmin.
-                  </span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-yumm-pink">•</span>
-                  <span>
-                    Backup otomatis hanya mengandalkan Supabase. Untuk
-                    keamanan tambahan, lakukan ekspor manual ke CSV setiap
-                    bulan.
-                  </span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-yumm-pink">•</span>
-                  <span>
-                    CSP header aktif. Kalau menambahkan domain eksternal
-                    (analytics, gambar dari CDN baru), update{" "}
-                    <code className="rounded bg-surface-muted px-1">
-                      next.config.ts
-                    </code>{" "}
-                    di bagian{" "}
-                    <code className="rounded bg-surface-muted px-1">
-                      connect-src
-                    </code>
-                    .
+                    Rotasi service role key segera setelah serah terima ke pembeli, dan setiap 6 bulan sekali sebagai praktik keamanan.
                   </span>
                 </li>
               </ul>
@@ -782,24 +811,10 @@ export default function DeveloperDocumentationPage() {
             href="/documentation/features"
             className="inline-flex items-center gap-2 rounded-full border-2 border-yumm-pink/30 bg-white px-6 py-3 font-display text-sm font-semibold text-yumm-pink transition-all hover:-translate-y-0.5 hover:border-yumm-pink hover:bg-yumm-pink hover:text-white"
           >
-            Lihat Fitur Yumm!
+            Lihat Fitur {settings.storeInfo.name}
           </Link>
         </div>
       </main>
-
-      <footer className="border-t border-neutral-100 bg-white px-4 py-8 sm:px-6">
-        <div className="mx-auto max-w-4xl text-center">
-          <Link
-            href="/"
-            className="font-display text-2xl font-bold text-yumm-pink"
-          >
-            Yumm!
-          </Link>
-          <p className="mt-2 text-xs text-ink-muted">
-            &copy; {new Date().getFullYear()} Yumm! All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

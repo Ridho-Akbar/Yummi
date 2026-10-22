@@ -21,7 +21,7 @@ export function Navbar({ user, storeName }: NavbarProps) {
   const navLinks = [
     { href: "/menu", label: "Menu Hari Ini" },
     { href: "/#kalender", label: "Jadwal" },
-    { href: "/documentation/features", label: "Tentang Kami" },
+    { href: "/documentation/features", label: "Dokumentasi" },
   ];
 
   return (

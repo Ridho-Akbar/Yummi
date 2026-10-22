@@ -496,7 +496,7 @@ function Screenshot({
               ? "(max-width: 768px) 60vw, 260px"
               : "(max-width: 1024px) 100vw, 900px"
           }
-          className="object-cover object-top"
+          className="object-contain object-top"
           priority={priority}
         />
       </div>

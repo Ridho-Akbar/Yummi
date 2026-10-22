@@ -176,11 +176,6 @@ export function SiteFooter({
                   Pesan Pre-Order
                 </Link>
               </li>
-              <li>
-                <Link href="/documentation/features" className="inline-block text-ink-muted transition-all duration-200 hover:translate-x-1 hover:text-yumm-pink">
-                  Tentang Kami
-                </Link>
-              </li>
             </ul>
           </div>
         </div>
